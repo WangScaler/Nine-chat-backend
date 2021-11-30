@@ -90,7 +90,7 @@ export class WsChatGateway {
     const user_id = this.clientIdMap[client.id];
     const user_info = this.onlineUserInfo[user_id];
     const { user_role, user_nick } = user_info
-    if(!['admin'].includes(user_role)) return client.emit('tips', { code: -1, msg: '当前切歌只对管理员开放哟！' });
+    if(!['admin','user'].includes(user_role)) return client.emit('tips', { code: -1, msg: '当前切歌只对管理员开放哟！' });
     const { music_album, music_artist } = this.currentMusicInfo;
 		await this.messageNotice('info', `${user_nick} 切掉了 ${music_album}(${music_artist})`);
 		this.switchMusic();
@@ -158,7 +158,7 @@ export class WsChatGateway {
       this.currentMusicInfo = music_info;
       this.currentMusicLrc = music_lrc;
       this.currentMusicSrc = await getMusciSrc(mid);
-      const { music_artist, music_album } = music_info;
+      const { music_artist, music_name } = music_info;
       this.queueMusicList.shift(); // 移除掉队列的第一首歌
       this.socket.emit('switchMusic', {
         musicInfo: {
@@ -167,8 +167,13 @@ export class WsChatGateway {
           music_lrc: this.currentMusicLrc,
           queue_music_list: this.queueMusicList,
         },
-        msg: `正在播放${user_info ? user_info.user_nick : '系统随机' }点播的 ${music_album}(${music_artist})`,
+       
+        
+        msg: `正在播放${user_info!=null ? user_info.user_nick : '系统随机' }点播的 ${music_name}(${music_artist})`,
       });
+      console.log(mid)
+      
+
       this.lastTimespace = new Date().getTime();
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
