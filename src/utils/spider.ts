@@ -108,6 +108,7 @@ export const spiderKuWoHotMusic = async (id = 1082685104) => {
     const music_duration =
       Number(time.split(':')[0]) * 60 + Number(time.split(':')[1]);
     const music_singer = $(node).find('.song_artist span').text();
+   
     musicList.push({
       music_name,
       music_album,
@@ -116,7 +117,40 @@ export const spiderKuWoHotMusic = async (id = 1082685104) => {
       music_mid,
     });
   });
-  return musicList;
+  let allMusic = [];
+ for(let i = 0;i<musicList.length;i++){
+   let music_info: { music_info: any; music_lrc?: any; };
+   let music_pic120;
+   let music_name = musicList[i].music_name;
+   let music_album = musicList[i].music_album;
+   let music_duration= musicList[i].music_duration;
+   let music_singer= musicList[i].music_singer;
+   let music_mid= musicList[i].music_mid;
+  try 
+    {
+      music_info = await getMusicDetail(music_mid)
+      music_pic120 = music_info.music_info.music_pic120
+      music_name = music_info.music_info.music_name
+      music_album = music_info.music_info.music_album
+      music_duration= music_info.music_info.music_duration
+      music_singer =  music_info.music_info.music_artist
+      music_mid = music_info.music_info.music_mid
+    }
+    
+  catch (error) {
+    music_pic120 = 'https://blog.scalerwang.com/back.jpg'
+  }
+
+   allMusic.push({
+    music_pic120,
+    music_name,
+    music_album,
+    music_duration,
+    music_singer,
+    music_mid})
+ }
+ console.log(allMusic)
+  return allMusic;
 };
 
 /**
