@@ -228,11 +228,13 @@ export const getMusicDetail = async (mid) => {
  * @param mid
  * @returns
  */
-export const getMusciSrc = async (mid) => {
-  const url = `https://www.kuwo.cn/api/v1/www/music/playUrl?mid=${mid}&type=music&httpsStatus=1&reqId=853eeac0-3d6f-11ec-928a-dfe06ab55d81`;
+ export const getMusciSrc = async (mid) => {
+  //const url = `https://www.kuwo.cn/api/v1/www/music/playUrl?mid=${mid}&type=music&httpsStatus=1&reqId=853eeac0-3d6f-11ec-928a-dfe06ab55d81`;
+  const url = `http://antiserver.kuwo.cn/anti.s?type=convert_url&rid=${mid}&format=mp3&response=url`;
   const res: any = await requestInterface(url);
-  if (res.code === 200) {
-    return res.data.url;
+  let Reg = /.mp3$/
+  if (Reg.test(res)) {
+    return res;
   } else {
     throw new HttpException(`没有找到歌曲地址！`, HttpStatus.BAD_REQUEST);
   }
