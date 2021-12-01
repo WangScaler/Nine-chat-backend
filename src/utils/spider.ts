@@ -203,6 +203,7 @@ export const getMusicDetail = async (mid) => {
       score100,
       album,
       songTimeMinutes,
+      name,
       rid: mid,
     } = musicInfoData.data;
     return {
@@ -213,7 +214,7 @@ export const getMusicDetail = async (mid) => {
         music_duration: duration,
         music_score100: score100,
         music_album: album,
-        music_name: album,
+        music_name: name,
         music_songTimeMinutes: songTimeMinutes,
         music_mid: mid,
       },
@@ -230,7 +231,7 @@ export const getMusicDetail = async (mid) => {
  */
  export const getMusciSrc = async (mid) => {
   //const url = `https://www.kuwo.cn/api/v1/www/music/playUrl?mid=${mid}&type=music&httpsStatus=1&reqId=853eeac0-3d6f-11ec-928a-dfe06ab55d81`;
-  const url = `http://antiserver.kuwo.cn/anti.s?type=convert_url&rid=${mid}&format=mp3&response=url`;
+  const url = `https://antiserver.kuwo.cn/anti.s?type=convert_url&rid=${mid}&format=mp3&response=url`;
   const res: any = await requestInterface(url);
   let Reg = /.mp3$/
   if (Reg.test(res)) {
