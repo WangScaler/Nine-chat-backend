@@ -58,8 +58,9 @@ export class MusicService {
       const res: any =  await searchMusic(url)
 			if (res.code === 200) {
 				musicList = res.data.list.map((t) => {
-					const { rid: music_mid, duration: music_duration, album: music_album, artist: music_artist, albumpic: music_albumpic, pic120: music_pic120, name: music_name, hasmv: music_hasmv } = t;
-					return { music_mid, music_duration, music_album, music_artist, music_albumpic, music_pic120, music_name, music_hasmv };
+					const { rid: music_mid, duration: music_duration, album: music_album, artist: music_artist,albumpic: music_albumpic, pic120: music_pic120, name: music_name, hasmv: music_hasmv } = t;
+					const music_singer = music_artist
+          return { music_mid, music_duration, music_album, music_artist, music_singer,music_albumpic, music_pic120, music_name, music_hasmv };
 				});
 			}
 		} catch (error) {
