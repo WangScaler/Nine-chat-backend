@@ -69,13 +69,20 @@ export class WsChatGateway {
   /* 接收到客户端的消息 */
   @SubscribeMessage('message')
   async handleMessage(client: Socket, data: any) {
-    const { message_type, message_content } = data;
+    
+    let { message_type, message_content } = data;
+    if(message_type == 'url'){
+      message_content = message_content.split("img:https://www.scalerwang.com/blog/")[1]
+      message_content = "https://blog.scalerwang.com/"+message_content
+      message_type = 'img'
+    }
     const user_id = this.clientIdMap[client.id];
-    const user_info = this.onlineUserInfo[user_id];
+    const userInfo = this.onlineUserInfo[user_id];
     const params = { user_id, message_content, message_type, room_id: 888 };
     await this.MessageModel.save(params);
+   
     this.socket.emit('message', {
-      data: { message_type, message_content, user_id, user_info },
+      data: { message_type, message_content, user_id, userInfo },
       msg: '有一条新消息',
     });
   }
@@ -91,8 +98,8 @@ export class WsChatGateway {
     const user_info = this.onlineUserInfo[user_id];
     const { user_role, user_nick } = user_info
     if(!['admin','user'].includes(user_role)) return client.emit('tips', { code: -1, msg: '当前切歌只对管理员开放哟！' });
-    const { music_album, music_artist } = this.currentMusicInfo;
-		await this.messageNotice('info', `${user_nick} 切掉了 ${music_album}(${music_artist})`);
+    const { music_name, music_artist } = this.currentMusicInfo;
+		await this.messageNotice('info', `${user_nick} 切掉了 ${music_name}(${music_artist})`);
 		this.switchMusic();
   }
 
@@ -169,7 +176,7 @@ export class WsChatGateway {
         },
        
         
-        msg: `正在播放${user_info!=null ? user_info.user_nick : '系统随机' }点播的 ${music_name}(${music_artist})`,
+        msg: `正在播放${user_info ? user_info.user_nick : '系统随机' }点播的 ${music_name}(${music_artist})`,
       });
       console.log(mid)
       
@@ -193,7 +200,7 @@ export class WsChatGateway {
     let user_info: any = null;
     if (this.queueMusicList.length) {
       mid = this.queueMusicList[0].music_mid;
-      user_info = this.queueMusicList[0].userInfo;
+      user_info = this.queueMusicList[0].user_info;
     } else {
       const randomId = getRandomId(1, this.maxCount);
       const randomMusic: any = await this.MusicModel.findOne({ id: randomId });
@@ -238,6 +245,32 @@ export class WsChatGateway {
     });
   }
 
+   /**
+   * @desc 退出房间
+   * @param client ws
+   * @param query 加入房间携带了token和位置信息
+   * @returns
+   */
+  	@SubscribeMessage('closeSocket')
+    async closeSocket(client, query) {
+      const token = query;
+      const payload = await verifyToken(token);
+      const { user_id } = payload;
+      const u = await this.UserModel.findOne({ id: user_id });
+      if (!u) {
+        client.emit('authFail', { code: -1, msg: '无此用户信息、非法操作！' });
+      }
+      const { user_nick, user_sex, user_avatar, user_role, user_sign } = u;
+      if (Reflect.has(this.onlineUserInfo, user_id)) {
+        　　Reflect.deleteProperty(this.onlineUserInfo, user_id);
+         }
+      this.socket.emit('offline', {
+      code: ChatCode.success,
+      onlineUser: this.onlineUserInfo,
+      msg: `${user_nick}离开房间了`,
+    });
+    }
+  
   /**
    * @desc 加入房间之后初始化信息 包含个人信息，歌曲列表，当前播放时间等等
    * @param client
