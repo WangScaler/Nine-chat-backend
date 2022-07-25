@@ -73,7 +73,7 @@ export class WsChatGateway {
     let { message_type, message_content } = data;
     if(message_type == 'url'){
       message_content = message_content.split("img:https://www.scalerwang.com/blog/")[1]
-      message_content = "https://blog.scalerwang.com/"+message_content
+      message_content = "https://blog.wangscaler.com/"+message_content
       message_type = 'img'
     }
     const user_id = this.clientIdMap[client.id];
@@ -115,8 +115,8 @@ export class WsChatGateway {
 		/* 计算距离上次点歌时间 */
 		if (this.chooseMusicTimeSpace[user_id]) {
 			const timeDifference = getTimeSpace(this.chooseMusicTimeSpace[user_id]);
-			if (timeDifference <= 30 && !['super', 'guest', 'admin'].includes(user_info.user_role)) {
-				return client.emit('tips', { code: -1, msg: `频率过高 请在${30 - timeDifference}秒后重试` });
+			if (timeDifference <= 10 && !['super', 'guest', 'admin','user'].includes(user_info.user_role)) {
+				return client.emit('tips', { code: -1, msg: `频率过高 请在${10 - timeDifference}秒后重试` });
 			}
 		}
 		musicInfo.user_info = user_info;

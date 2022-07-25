@@ -138,7 +138,7 @@ export const spiderKuWoHotMusic = async (id = 1082685104) => {
     }
     
   catch (error) {
-    music_pic120 = 'https://blog.scalerwang.com/back.jpg'
+    music_pic120 = 'https://blog.wangscaler.com/back.jpg'
   }
 
    allMusic.push({

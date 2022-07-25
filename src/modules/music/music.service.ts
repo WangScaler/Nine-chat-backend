@@ -34,7 +34,7 @@ export class MusicService {
     const params = { classPage: 1, classPageSize: 3 };
     const musicCount = await this.MusicModel.count();
     if (musicCount) {
-      return console.log(`已经有${musicCount}首音乐了、无需初始化歌单了！`);
+     return console.log(`已经有${musicCount}首音乐了、无需初始化歌单了！`);
     }
     const musicList = await initMusicSheet(params);
     await this.MusicModel.save(
@@ -76,20 +76,21 @@ export class MusicService {
    * @returns 
    */
   async collectMusic(payload, params) {
-		const { music_mid, music_pic120, music_artist, music_album, music_name } = params;
-		const { user_id, user_role } = payload;
-		const c = await this.CollectModel.count({ where: { music_mid, user_id, is_delete: 1  } });
-    if (c > 0) {
-			throw new HttpException(`您已经收藏过这首歌了！`, HttpStatus.BAD_REQUEST);
-		}
-    const music: any = { music_mid, music_pic120, music_artist, music_album, music_name, user_id }
-		await this.CollectModel.save(music)
-    user_role === 'admin' && (music.is_recommend = 1)
-    const m = await this.MusicModel.count({ where: { music_mid } })
-    if(m) {
-      return await this.MusicModel.update( { music_mid }, { is_recommend: 1} )
-    }
-    return  await this.MusicModel.save(music)
+		  const { music_mid, music_pic120, music_artist, music_album, music_name,music_duration } = params;
+		  const { user_id, user_role } = payload;
+		  const c = await this.CollectModel.count({ where: { music_mid, user_id, is_delete: 1  } });
+      if (c > 0) {
+			  throw new HttpException(`您已经收藏过这首歌了！`, HttpStatus.BAD_REQUEST);
+		  }
+      const music_singer = music_artist
+      const music: any = { music_mid, music_pic120, music_duration,music_artist,music_singer, music_album, music_name, user_id }
+		  await this.CollectModel.save(music)
+      user_role === 'admin' && (music.is_recommend = 1)
+      const m = await this.MusicModel.count({ where: { music_mid } })
+      if(m) {
+        return await this.MusicModel.update( { music_mid }, { is_recommend: 1} )
+      }
+      return  await this.MusicModel.save(music)
 	}
 
   /* 获取收藏歌单 */

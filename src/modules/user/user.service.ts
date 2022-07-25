@@ -89,6 +89,9 @@ export class UserService {
   }
 
   async update(payload, params) {
+    const { userId, user_name, user_nick, user_sign,user_avatar } = params;
+    const user: any = { userId, user_name, user_nick,user_sign,user_avatar }
+    await this.UserModle.update( { id:userId }, { user_nick: user_nick,user_sign:user_sign,user_avatar:user_avatar} )
     return params;
   }
 }

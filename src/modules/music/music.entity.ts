@@ -21,6 +21,6 @@ export class MusicEntity extends BaseEntity {
   @Column({ comment:"是否推荐到热门歌曲 1:是 -1:不是", default: -1})
   is_recommend: number;
 
-  @Column({ length: 255, comment: "歌曲封面图",default: "https://blog.scalerwang.com/back.jpg" })
+  @Column({ length: 255, comment: "歌曲封面图",default: "https://blog.wangscaler.com/back.jpg" })
   music_pic120: string;
 }
